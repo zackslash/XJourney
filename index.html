@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>XJourney</title>
+  </head>
+  <script>
+    var locItemCreator = require('./js/locItemGenerator.js');
+    var plist = require('plist');
+    var fs = require('fs');
+    var replaceWithReal = "integer";
+    var realReplacement = "real";
+
+    //Placeholder values
+    var LocDelBehaviorPlaceholder = 88888888;
+    var LocRepBehaviorPlaceholder = 99999999;
+    var locationsDataPlaceholder = "REPLACE_LOCATIONS";
+    var DOMLocationDataPlaceholder = "<string>" + locationsDataPlaceholder + "</string>";
+
+    //Settings - need to be strings so floating point is not truncated
+    var LocationDeliveryBehavior = "0.0";
+    var LocationRepeatBehavior = "2";
+
+    var plistBase = {
+      "Locations": [locationsDataPlaceholder],
+      "Options":{
+        "LocationDeliveryBehavior":LocDelBehaviorPlaceholder,
+        "LocationRepeatBehavior":LocRepBehaviorPlaceholder
+        }
+    };
+
+    //Helper method to replace all occurences of a string
+    function replaceAll(find, replace, str) {
+      return str.replace(new RegExp(find, 'g'), replace);
+    }
+
+    //1st pass creates location plist base
+    function performFirstPassReplacements() {
+        //Create base plist
+        var out = plist.build(plistBase);
+        //1st pass ensures values are 'real' as is required in Plist
+        out = replaceAll(replaceWithReal,realReplacement,out);
+
+        //Ensure real floating values are in 'LocationDeliveryBehavior'
+        var oldLocDel = "<" + realReplacement + ">" + LocDelBehaviorPlaceholder + "</" + realReplacement + ">";
+        var newLocDel = "<" + realReplacement + ">" + LocationDeliveryBehavior + "</" + realReplacement + ">";
+        out = out.replace(oldLocDel,newLocDel);
+
+        //Ensure real floating values are in 'LocationRepeatBehavior'
+        var oldLocRep = "<" + realReplacement + ">" + LocRepBehaviorPlaceholder + "</" + realReplacement + ">";
+        var newLocRep = "<" + realReplacement + ">" + LocationRepeatBehavior + "</" + realReplacement + ">";
+        out = out.replace(oldLocRep,newLocRep);
+
+        return out;
+    }
+
+    /*
+      Test Values
+    */
+    var AltitudeTestVal = "0.0";
+    var LatitudeTestVal = "37.335274759999997";
+    var LongitudeTestVal = "-122.03254703";
+    var CourseTestVal = "178.24000000000001";
+    var HorizontalAccuracyTestVal = "5";
+    var LifespanTestVal = "30";
+    var SpeedTestVal = "50.6699999999999999";
+    var TimestampTestVal = "315866472.30299997";
+    var TypeTestVal = "1";
+    var VerticalAccuracyTestVal = "-1";
+
+    //format latitude,longitude,course
+    //Generates the plist (primary 'do it' method)
+    function generatePlist(inputCSVItems) {
+        var pList = performFirstPassReplacements();
+        var pulseList = "";
+        for (var i = 0; i < inputCSVItems.length; i = i+3)
+        {
+          var timestamp = 315866472.30299997 + i;
+          var newPulse = locItemCreator.generateLocationPulse(AltitudeTestVal,inputCSVItems[i],inputCSVItems[i+1],inputCSVItems[i+2],HorizontalAccuracyTestVal,LifespanTestVal,SpeedTestVal,timestamp,VerticalAccuracyTestVal);
+          pulseList = pulseList + "\n" + newPulse;
+        }
+
+        pList = pList.replace(DOMLocationDataPlaceholder,pulseList);
+
+        return pList;
+    }
+
+    function createPlistFile() {
+
+
+      var inputCSV = document.getElementById('inputCSV').value;
+      var locCSVItems = inputCSV.split(',');
+
+      if(locCSVItems.length < 3)
+      {
+          alert("No input data");
+          return;
+      }
+
+      if(locCSVItems.length % 3 != 0)
+      {
+          alert("Bad input data (not correct number of values)");
+          return;
+      }
+
+      var newPlist = generatePlist(locCSVItems);
+        fs.writeFile("/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/CoreLocation.framework/Support/SimulationScenarios/Spoofed Journey.plist", newPlist, function(err) {
+          if(err)
+            {
+              alert("Error saving journey: make sure xcode.app is in your 'Applications' dir.");
+            }
+            else
+            {
+              alert("Journey is spoofed, reset your iOS Simulator");
+            }
+        });
+    }
+
+  </script>
+  <body style="text-align: center;">
+    <h1>XJourney</h1>
+    <textarea style="width:400px;height:150px;" id="inputCSV">50.855010000,-1.275210000,91.3,50.855310000,-1.272300000,80.7,50.855310000,-1.272300000,80.7,50.855360000,-1.272270000,20.7,50.855380000,-1.272190000,68.4,50.855970000,-1.272060000,7.9,50.862100000,-1.270860000,7.0,50.862730000,-1.270770000,5.2,50.863110000,-1.270820000,355.3,50.863110000,-1.270820000,355.3,50.863150000,-1.270900000,308.4,50.863210000,-1.270930000,342.5,50.863260000,-1.270880000,32.3,50.863280000,-1.270800000,68.4,50.863240000,-1.270710000,125.2,50.863180000,-1.270680000,162.5,50.862690000,-1.267590000,104.1,50.861430000,-1.260160000,105.0,50.861430000,-1.260060000,90.0,50.861480000,-1.260040000,14.2,50.861490000,-1.259960000,78.8,50.861420000,-1.259940000,169.8,50.861400000,-1.259850000,109.4,50.861400000,-1.259850000,109.4,50.861870000,-1.256720000,76.6,50.861890000,-1.255360000,88.7,50.861860000,-1.255070000,99.3,50.862010000,-1.254660000,59.9,50.861960000,-1.254560000,128.4,50.861920000,-1.254380000,109.4,50.861910000,-1.253930000,92.0,50.861910000,-1.253930000,92.0,50.862240000,-1.253720000,21.9,50.862240000,-1.253720000,21.9,50.862700000,-1.254140000,330.0,50.863660000,-1.254750000,338.1,50.863730000,-1.254730000,10.2,50.864340000,-1.255100000,339.1,50.864920000,-1.255340000,345.4,50.865530000,-1.255470000,352.3,50.865900000,-1.255470000,0.0,50.866250000,-1.255560000,350.8,50.868050000,-1.255260000,6.0,50.868280000,-1.255430000,335.0,50.868280000,-1.255430000,335.0,50.868350000,-1.255700000,292.3,50.868580000,-1.256000000,320.5,50.868720000,-1.256040000,349.8,50.868890000,-1.255990000,10.5,50.869160000,-1.255790000,25.1,50.869280000,-1.255650000,36.4,50.869520000,-1.255250000,46.4,50.869720000,-1.254820000,53.6,50.869850000,-1.254680000,34.2,50.872680000,-1.253480000,15.0,50.873140000,-1.253240000,18.2,50.873350000,-1.253200000,6.9,50.873570000,-1.253300000,344.0,50.873570000,-1.253300000,344.0,50.873820000,-1.253540000,328.8,50.873980000,-1.253580000,351.0,50.874320000,-1.253440000,14.6,50.874870000,-1.253080000,22.4,50.875030000,-1.252880000,38.3,50.875100000,-1.252650000,64.3,50.875130000,-1.252240000,83.4,50.875110000,-1.252020000,98.2,50.875030000,-1.251760000,116.0,50.874980000,-1.251670000,131.4,50.874690000,-1.251500000,159.7,50.874500000,-1.251270000,142.6,50.874380000,-1.251060000,132.2,50.872510000,-1.246140000,121.1,50.872340000,-1.245950000,144.8,50.872340000,-1.245950000,144.8,50.871150000,-1.242680000,120.0,50.870560000,-1.240820000,116.7,50.869900000,-1.238550000,114.7,50.869370000,-1.236360000,111.0,50.868780000,-1.233570000,108.5,50.868330000,-1.230920000,105.1,50.868090000,-1.229090000,101.7,50.867790000,-1.226210000,99.4,50.867570000,-1.222780000,95.8,50.867520000,-1.221100000,92.7,50.867500000,-1.218830000,90.8,50.867560000,-1.216490000,87.7,50.868100000,-1.203510000,86.2,50.868150000,-1.200720000,88.4,50.868150000,-1.198030000,90.0,50.868070000,-1.194400000,92.0,50.867940000,-1.191440000,94.0,50.867750000,-1.188830000,96.6,50.867450000,-1.185970000,99.4,50.867110000,-1.183670000,103.2,50.866730000,-1.181440000,105.1,50.865970000,-1.177860000,108.6,50.864920000,-1.173990000,113.3,50.864390000,-1.172330000,116.8,50.863080000,-1.168450000,118.1,50.862540000,-1.166750000,116.7,50.861670000,-1.163790000,115.0,50.860220000,-1.158220000,112.4,50.858880000,-1.152760000,111.2,50.857650000,-1.147930000,112.0,50.857270000,-1.146230000,109.5,50.856840000,-1.143910000,106.4,50.856490000,-1.141630000,103.7,50.856240000,-1.139420000,100.2,50.856060000,-1.137250000,97.5,50.855970000,-1.135700000,95.3,50.855930000,-1.133160000,91.4,50.855960000,-1.126230000,89.6,50.855900000,-1.123540000,92.0,50.855790000,-1.121490000,94.9,50.855600000,-1.119320000,97.9,50.855300000,-1.116660000,100.1,50.854960000,-1.114430000,103.6,50.854640000,-1.112590000,105.4,50.854270000,-1.110880000,108.9,50.853990000,-1.109860000,113.5,50.853670000,-1.108950000,119.1,50.853100000,-1.107600000,123.8,50.852690000,-1.106810000,129.4,50.852240000,-1.106050000,133.2,50.851330000,-1.104830000,139.8,50.846620000,-1.099390000,143.9,50.845430000,-1.097900000,141.7,50.844410000,-1.096430000,137.7,50.843870000,-1.095590000,135.5,50.843050000,-1.094170000,132.4,50.842160000,-1.092500000,130.2,50.842160000,-1.092500000,130.2,50.842100000,-1.092210000,108.1,50.841160000,-1.090140000,125.7,50.839760000,-1.086480000,121.2,50.839480000,-1.085870000,126.0,50.839190000,-1.085360000,132.0,50.838860000,-1.084900000,138.6,50.838530000,-1.084520000,144.0,50.837830000,-1.083930000,152.0,50.837350000,-1.083660000,160.4,50.836490000,-1.083430000,170.4,50.836020000,-1.083430000,180.0,50.835610000,-1.083490000,185.3,50.835010000,-1.083700000,192.5,50.834510000,-1.083990000,200.1,50.833950000,-1.084470000,208.4,50.832960000,-1.085450000,212.0,50.832790000,-1.085490000,188.5,50.830890000,-1.087430000,212.8,50.829990000,-1.088180000,207.8,50.824960000,-1.091760000,204.2,50.824200000,-1.092240000,201.8,50.823660000,-1.092490000,196.3,50.822970000,-1.092680000,189.9,50.822280000,-1.092750000,183.7,50.821680000,-1.092710000,177.6,50.820860000,-1.092490000,170.4,50.820190000,-1.092180000,163.7,50.818480000,-1.091250000,161.0,50.817260000,-1.090450000,157.5,50.817260000,-1.090450000,157.5,50.817190000,-1.090290000,124.7,50.816300000,-1.089280000,144.4,50.814750000,-1.086970000,136.7,50.814130000,-1.086170000,140.8,50.814130000,-1.086170000,140.8,50.814130000,-1.085940000,90.0,50.814250000,-1.085610000,60.1,50.814390000,-1.085340000,50.6,50.814580000,-1.085170000,29.5,50.815490000,-1.085000000,6.7,50.817300000,-1.084780000,4.4,50.817300000,-1.084780000,4.4,50.817230000,-1.083300000,94.3,50.817230000,-1.083300000,94.3,50.816670000,-1.083320000,181.3</textarea>
+    <div id="startButton" style="width:50px;height:30px;background-color:blue;">Spoof Journey</div>
+    <script>
+      document.getElementById("startButton").onclick = function () { createPlistFile(); };
+    </script>
+  </body>
+</html>
