@@ -1,10 +1,10 @@
 #!/bin/bash -       
 #title           :build.sh
 #description     :This script will build the XJourney application for OSX.
-#author		 :Luke Hines
+#author			 :Luke Hines
 #date            :20141012
 #version         :0.1    
-#usage		 :bash build.sh
+#usage			 :bash build.sh
 #notes           :resulting application will be inside 'Output' directory.
 #bash_version    :4.1.5(1)-release
 #==============================================================================
