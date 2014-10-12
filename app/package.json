@@ -1,0 +1,42 @@
+{
+    "webexe_settings": {
+        "linux-x32": false, 
+        "download_dir": "/Users/lukehines/Desktop/node-webkit/Web2Executable.app/Contents/MacOS/files/downloads", 
+        "windows": false, 
+        "mac": true, 
+        "nw_version": "0.10.5", 
+        "force_download": false, 
+        "linux-x64": false
+    }, 
+    "snapshot" : "js/base64.bin",
+    "snapshot" : "js/locItemGenerator.bin",
+    "name": "XJourney", 
+    "nodejs": true, 
+    "description": "Add simulated journey routes to iOS simulator", 
+    "single-instance": true, 
+    "keywords": [], 
+    "window": {
+        "fullscreen": false, 
+        "resizable": false, 
+        "title": "XJourney", 
+        "always-on-top": false, 
+        "frame": true, 
+        "visible": true, 
+        "height": 290, 
+        "width": 520, 
+        "as_desktop": false, 
+        "maximizable": false, 
+        "position": "", 
+        "show_in_taskbar": true, 
+        "toolbar": false, 
+        "icon": "icon.png"
+    }, 
+    "version": "0.1.0", 
+    "webkit": {
+        "page-cache": false, 
+        "java": false, 
+        "plugin": false
+    }, 
+    "main": "index.html", 
+    "node-main": ""
+}

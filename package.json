@@ -10,7 +10,7 @@
     }, 
     "name": "XJourney", 
     "nodejs": true, 
-    "description": "", 
+    "description": "Add simulated journeys to iOS simulator", 
     "single-instance": true, 
     "keywords": [], 
     "window": {
@@ -21,7 +21,7 @@
         "frame": true, 
         "visible": true, 
         "height": 290, 
-        "width": 600, 
+        "width": 520, 
         "as_desktop": false, 
         "maximizable": false, 
         "position": "", 
