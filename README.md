@@ -3,14 +3,14 @@ XJourney
 
 Apple currently provide no way of adding new test routes to simulate active GPS data in their iOS simulator, that's where this tool comes in!
 
+<img src ="http://www.bottleofcode.com/wp-content/uploads/2014/10/XJourneyWindow1.png" />
+
 Add new GPS routes / locations to iOS Simulator.
 
 you can download the prebuilt tool [HERE](http://www.bottleofcode.com/wp-content/uploads/2014/10/XJourney.zip)
 
 
-##Usage
-
-<img src ="http://www.bottleofcode.com/wp-content/uploads/2014/10/XJourneyWindow1.png" />
+## Usage
 
 Just drag and drop a CSV of CLLocation objects into XLocation, reset your iOS simulator and find the new simulated GPS route added inside your 'Debug > Location' menu.
 
@@ -21,10 +21,16 @@ There is example data (ExampleData.csv) included in the source, each CSV entry s
 Format:`Altitude,Lat,Long,Course,HorizontalAccuracy,Lifespan,Speed,Timestamp,VerticalAccuracy,Type,`
 Example:`9,50.863517,-1.169958,118,5,30,19.540001,1412580664.109,1,3,`
 
-##Requirements
+
+## Requirements
 
 * Xcode 6.0 or later
 * Xcode must be inside your 'Applications' directory and named 'Xcode'.
+
+
+## Build
+This application was written using [Node-Webkit](https://github.com/rogerwang/node-webkit) to 'compile' run the build.sh script and the package in the 'output' dir will get updated.
+
 
 ## License
 
