@@ -12,7 +12,7 @@ you can download the prebuilt tool [HERE](http://www.bottleofcode.com/wp-content
 
 ## Usage
 
-Just drag and drop a CSV of CLLocation objects into XLocation, reset your iOS simulator and find the new simulated GPS route added inside your 'Debug > Location' menu.
+Just drag and drop a CSV of CLLocation objects into XJourney, reset your iOS simulator and find the new simulated GPS route added inside your 'Debug > Location' menu.
 
 <img src ="http://www.bottleofcode.com/wp-content/uploads/2014/10/XJourney.png" />
 
