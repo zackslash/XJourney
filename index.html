@@ -181,6 +181,9 @@
 		.osx b, .osx strong {
 		  font-weight: 500;
 		}
+		
+		#holder {  -webkit-border-radius:30px; background-color:white; border: 10px dashed #ccc; width: 300px; height: 150px; margin: 20px auto;}
+		#holder.hover { border: 10px dashed #333; }
   </style>
   <script src="js/jquery-2.1.1.min"></script>
   <script>
@@ -241,29 +244,18 @@
         return out;
     }
 
-    /*
-      Test Values
-    */
-    var AltitudeTestVal = "0.0";
-    var LatitudeTestVal = "37.335274759999997";
-    var LongitudeTestVal = "-122.03254703";
-    var CourseTestVal = "178.24000000000001";
-    var HorizontalAccuracyTestVal = "5";
-    var LifespanTestVal = "30";
-    var SpeedTestVal = "50.6699999999999999";
-    var TimestampTestVal = "315866472.30299997";
-    var VerticalAccuracyTestVal = "-1";
-
     //format latitude,longitude,course
     //Generates the plist (primary 'do it' method)
     function generatePlist(inputCSVItems) {
         var pList = performFirstPassReplacements();
         var pulseList = "";
-        for (var i = 0; i < inputCSVItems.length; i = i+3)
+        for (var i = 0; i < inputCSVItems.length; i = i+10)
         {
           var timestamp = 315866472.30299997 + i;
-          var newPulse = locItemCreator.generateLocationPulse(AltitudeTestVal,inputCSVItems[i],inputCSVItems[i+1],inputCSVItems[i+2],HorizontalAccuracyTestVal,LifespanTestVal,SpeedTestVal,timestamp,VerticalAccuracyTestVal,fs,Base64);
-          pulseList = pulseList + "\n" + newPulse;
+          													//21,				50.853394,		  -1.289268,		 302, 				 10,				   30,			  6.26,				 1412578717.1,		1,					3,		1,
+          													//(AltitudeIn,     LatitudeIn,        LongitudeIn,       CourseIn,           HorizontalAccuracyIn, LifespanIn,    SpeedIn,           TimestampIn,       VerticalAccuracyIn, TypeIn, fs, Base64) 
+          var newPulse = locItemCreator.generateLocationPulse(inputCSVItems[i],inputCSVItems[i+1],inputCSVItems[i+2],inputCSVItems[i+3],inputCSVItems[i+4],inputCSVItems[i+5],inputCSVItems[i+6],inputCSVItems[i+7],inputCSVItems[i+8],inputCSVItems[i+9],fs,Base64);
+          pulseList = pulseList + "\n" + newPulse;				
         }
 
         pList = pList.replace(DOMLocationDataPlaceholder,pulseList);
@@ -271,32 +263,30 @@
         return pList;
     }
 
-    function createPlistFile() {
-
-		var inputCSV = document.getElementById('inputCSV').value;
+    function createPlistFile(inputCSV) {
 		var locCSVItems = inputCSV.split(',');
 
-		if(locCSVItems.length < 3)
+		if(locCSVItems.length < 10)
 		{
 			alert("No input data");
 			return;
 		}
 
-		if(locCSVItems.length % 3 != 0)
+		if(locCSVItems.length % 10 != 0)
 		{
-			alert("Bad input data (Incorrect number of CSV values)");
+			alert("Bad input data (Incorrect number of values)");
 			return;
 		}
 
 		var newPlist = generatePlist(locCSVItems);
-		fs.writeFile("/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/CoreLocation.framework/Support/SimulationScenarios/Spoofed Journey.plist", newPlist, function(err) {
+		fs.writeFile("/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/CoreLocation.framework/Support/SimulationScenarios/XJourney.plist", newPlist, function(err) {
 			if(err)
 			{
 				alert("Error saving journey: make sure xcode.app is in your 'Applications' directory.");
 			}
 			else
 			{
-				alert("Journey spoofed successfully, reset iOS Simulator.");
+				alert("Journey added successfully, reset iOS Simulator then look for 'XJourney' under 'Location'.");
 			}
 		});
 	}
@@ -305,12 +295,27 @@
 
   <body style="text-align:center;background-color:#2C96F2;background-image: url('media/bg.png');">
     <h1 style="font-family:MyriadSetPro-UltraLight;-webkit-user-select:none;cursor:default;">XJourney</h1>
-    <textarea placeholder="Paste CSV Here. Format: lat,long,cource" style="border-color:#C8C8C8;font-family:'Helvetica';width:400px;height:150px;-webkit-border-radius:10px;resize:none;outline:none;margin-top: -10px;" id="inputCSV"></textarea>
-    <div style="width:100%;height:20px;margin-top: 10px;"><div style="width:125px;height:20px;margin: 0 auto;"><div id="startButton"class="osx" style="position:relative;left:6px;">Spoof Journey</div></div></div>
-
+	<div id="holder"><div style="cursor:default;-webkit-user-select:none;font-family:MyriadSetPro-UltraLight;position:relative;margin-top:60px;text-align:center">Drop CSV Here</div></div>
+    
     <script>
-      document.getElementById("startButton").onclick = function () { createPlistFile(); };
-    </script>
+	// prevent default behavior from changing page on dropped file
+	window.ondragover = function(e) { e.preventDefault(); return false };
+	window.ondrop = function(e) { e.preventDefault(); return false };
+
+	var holder = document.getElementById('holder');
+	holder.ondragover = function () { this.className = 'hover'; return false; };
+	holder.ondragend = function () { this.className = ''; return false; };
+	holder.ondrop = function (e) {
+  	e.preventDefault();
+
+  	for (var i = 0; i < e.dataTransfer.files.length; ++i) 
+  	{
+  		var locFile = fs.readFileSync(e.dataTransfer.files[i].path, "utf8");
+  		createPlistFile(locFile);
+  	}
+  return false;
+};
+</script>
     
   </body>
 </html>

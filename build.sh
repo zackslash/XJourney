@@ -10,4 +10,4 @@
 #==============================================================================
 
 rm –Rf output/XJourney.app/Contents/Resources/app.nw
-zip -r --exclude=*output* --exclude=*build.sh* --exclude=*TestData.txt* output/XJourney.app/Contents/Resources/app.nw *
+zip -r --exclude=*output* --exclude=*build.sh* --exclude=*ExampleData.csv* output/XJourney.app/Contents/Resources/app.nw *
