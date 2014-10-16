@@ -264,6 +264,10 @@
     }
 
     function createPlistFile(inputCSV) {
+    
+    	//remove possible comma using regex
+    	inputCSV = inputCSV.replace(/(^,)|(,$)/g, "");
+    	
 		var locCSVItems = inputCSV.split(',');
 
 		if(locCSVItems.length < 10)
