@@ -40,7 +40,7 @@
 	}
 
 	// Export our public API.
-	exports.generateLocationPulse = function(AltitudeIn, LatitudeIn, LongitudeIn, CourseIn, HorizontalAccuracyIn, LifespanIn, SpeedIn, TimestampIn, VerticalAccuracyIn, TypeIn, fs, Base64) {
+	exports.generateLocationPulse = function(AltitudeIn, LatitudeIn, LongitudeIn, CourseIn, HorizontalAccuracyIn, LifespanIn, SpeedIn, TimestampIn, TypeIn, VerticalAccuracyIn, fs, Base64) {
 		var locationPlist = fs.readFileSync('./media/locitembase.plist', "utf8");
 		var out = locationPlist;
 		out = out.replace(Altitude, AltitudeIn);
