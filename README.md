@@ -7,7 +7,7 @@ Apple currently provide no way of adding new test routes to simulate active GPS 
 
 Add new GPS routes / locations to iOS Simulator.
 
-you can download the prebuilt tool [HERE](http://www.bottleofcode.com/wp-content/uploads/2014/10/XJourney.zip)
+you can download the prebuilt tool [HERE](http://www.bottleofcode.com/wp-content/uploads/2014/11/XJourney-101.zip)
 
 
 ## Usage
@@ -16,9 +16,9 @@ Just drag and drop a CSV of CLLocation objects into XJourney, reset your iOS sim
 
 <img src ="http://www.bottleofcode.com/wp-content/uploads/2014/10/XJourney.png" />
 
-There is example data (ExampleData.csv) included in the source, each CSV entry should contain the following 10 items
+There is example data (ExampleData.csv) included in the src, follow that format when generating your own data.
 
-Format:`Altitude,Lat,Long,Course,HorizontalAccuracy,Lifespan,Speed,Timestamp,VerticalAccuracy,Type,`
+Format:`Altitude,Latitude,Longitude,Course,HorizontalAccuracy,Lifespan,Speed,Timestamp,Type,VerticalAccuracy,`
 Example:`9,50.863517,-1.169958,118,5,30,19.540001,1412580664.109,1,3,`
 
 
@@ -26,6 +26,7 @@ Example:`9,50.863517,-1.169958,118,5,30,19.540001,1412580664.109,1,3,`
 
 * Xcode 6.0 or later
 * Xcode must be inside your 'Applications' directory and named 'Xcode'.
+* If you downloaded Xcode from the appstore (and not the iOS dev portal) you need to give 'Everyone' read & write permissions to `/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/CoreLocation.framework/Support/SimulationScenarios/`
 
 
 ## Build
