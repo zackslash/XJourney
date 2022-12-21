@@ -1,3 +1,5 @@
+Note: Xcode has now moved on and this project is now archived.
+
 XJourney
 ========
 
